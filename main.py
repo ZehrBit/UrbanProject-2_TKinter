@@ -29,6 +29,10 @@ class DrawingApp:
         self.canvas.bind("<ButtonRelease-1>", self.reset)
         self.canvas.bind("<Button-3>", self.pick_color)  # Привязка события для пипетки
 
+        # Привязка горячих клавиш
+        self.root.bind('<Control-s>', self.save_image)
+        self.root.bind('<Control-c>', self.choose_color)
+
     def setup_ui(self):
         # Панель инструментов
         control_frame = tk.Frame(self.root)
@@ -90,7 +94,7 @@ class DrawingApp:
         self.image = Image.new("RGB", (600, 400), "white")
         self.draw = ImageDraw.Draw(self.image)
 
-    def choose_color(self):
+    def choose_color(self, event=None):
         color = colorchooser.askcolor(color=self.brush_color)[1]
         if color:
             self.brush_color = color
@@ -99,7 +103,7 @@ class DrawingApp:
     def use_eraser(self):
         self.brush_color = "white"
 
-    def save_image(self):
+    def save_image(self, event=None):
         file_path = filedialog.asksaveasfilename(filetypes=[('PNG files', '*.png')])
         if file_path:
             if not file_path.endswith('.png'):
