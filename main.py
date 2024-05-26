@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import colorchooser, filedialog, messagebox
+from tkinter import colorchooser, filedialog, messagebox, simpledialog
 from PIL import Image, ImageDraw
 
 
@@ -8,12 +8,16 @@ class DrawingApp:
         self.root = root
         self.root.title("Программа для рисования")
 
+        # Инициализация размеров холста
+        self.canvas_width = 600
+        self.canvas_height = 400
+
         # Создаем изображение и объект для рисования
-        self.image = Image.new("RGB", (600, 400), "white")
+        self.image = Image.new("RGB", (self.canvas_width, self.canvas_height), "white")
         self.draw = ImageDraw.Draw(self.image)
 
         # Создаем холст TKinter
-        self.canvas = tk.Canvas(root, bg="white", width=600, height=400)
+        self.canvas = tk.Canvas(root, bg="white", width=self.canvas_width, height=self.canvas_height)
         self.canvas.pack()
 
         # Инициализация атрибутов кисти
@@ -62,6 +66,10 @@ class DrawingApp:
         save_button = tk.Button(control_frame, text="Сохранить", command=self.save_image)
         save_button.pack(side=tk.LEFT)
 
+        # Кнопка "Изменить размер холста"
+        resize_button = tk.Button(control_frame, text="Изменить размер холста", command=self.resize_canvas)
+        resize_button.pack(side=tk.LEFT)
+
         self.brush_size_scale = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL)
         self.brush_size_scale.pack(side=tk.LEFT)
 
@@ -97,7 +105,7 @@ class DrawingApp:
 
     def clear_canvas(self):
         self.canvas.delete("all")
-        self.image = Image.new("RGB", (600, 400), "white")
+        self.image = Image.new("RGB", (self.canvas_width, self.canvas_height), "white")
         self.draw = ImageDraw.Draw(self.image)
 
     def choose_color(self, event=None):
@@ -106,6 +114,22 @@ class DrawingApp:
             self.brush_color = color
             self.previous_color = color  # Обновляем предыдущий цвет кисти
             self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
+
+    def resize_canvas(self):
+        new_width = simpledialog.askinteger("Изменить размер холста", "Введите новую ширину:\t\t\t",
+                                            initialvalue=self.canvas_width)
+        new_height = simpledialog.askinteger("Изменить размер холста", "Введите новую высоту:\t\t\t",
+                                             initialvalue=self.canvas_height)
+
+        if new_width and new_height:
+            # Обновляем размеры холста
+            self.canvas_width, self.canvas_height = new_width, new_height
+            self.canvas.config(width=self.canvas_width, height=self.canvas_height)
+
+            # Создаем новое изображение с новыми размерами
+            self.image = Image.new("RGB", (self.canvas_width, self.canvas_height), "white")
+            self.draw = ImageDraw.Draw(self.image)
+            self.clear_canvas()
 
     def use_eraser(self):
         self.brush_color = "white"
