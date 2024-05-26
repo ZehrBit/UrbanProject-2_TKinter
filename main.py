@@ -27,6 +27,7 @@ class DrawingApp:
         # Привязка событий
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<ButtonRelease-1>", self.reset)
+        self.canvas.bind("<Button-3>", self.pick_color)  # Привязка события для пипетки
 
     def setup_ui(self):
         # Панель инструментов
@@ -66,6 +67,14 @@ class DrawingApp:
 
         self.last_x = event.x
         self.last_y = event.y
+
+    def pick_color(self, event):
+        x, y = event.x, event.y
+        # Получаем цвет пикселя в позиции (x, y)
+        color = self.image.getpixel((x, y))
+        # Преобразуем цвет в формат HEX
+        self.brush_color = f'#{color[0]:02x}{color[1]:02x}{color[2]:02x}'
+        self.previous_color = self.brush_color  # Обновляем предыдущий цвет кисти
 
     def brush(self):
         self.brush_color = self.previous_color
