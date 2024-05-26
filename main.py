@@ -42,6 +42,10 @@ class DrawingApp:
         color_button = tk.Button(control_frame, text="Выбрать цвет", command=self.choose_color)
         color_button.pack(side=tk.LEFT)
 
+        # Лейбл для предварительного просмотра цвета кисти
+        self.color_preview = tk.Label(control_frame, text="     ", bg=self.brush_color)
+        self.color_preview.pack(side=tk.LEFT, padx=5)
+
         # Кнопка "Кисть"
         eraser_button = tk.Button(control_frame, text="Кисть", command=self.brush)
         eraser_button.pack(side=tk.LEFT)
@@ -79,9 +83,11 @@ class DrawingApp:
         # Преобразуем цвет в формат HEX
         self.brush_color = f'#{color[0]:02x}{color[1]:02x}{color[2]:02x}'
         self.previous_color = self.brush_color  # Обновляем предыдущий цвет кисти
+        self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
 
     def brush(self):
         self.brush_color = self.previous_color
+        self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
 
     def change_brush_size(self, size):
         self.brush_size = size
@@ -99,9 +105,11 @@ class DrawingApp:
         if color:
             self.brush_color = color
             self.previous_color = color  # Обновляем предыдущий цвет кисти
+            self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
 
     def use_eraser(self):
         self.brush_color = "white"
+        self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
 
     def save_image(self, event=None):
         file_path = filedialog.asksaveasfilename(filetypes=[('PNG files', '*.png')])
