@@ -1,3 +1,5 @@
+# python 3.12
+
 import tkinter as tk
 from tkinter import colorchooser, filedialog, messagebox, simpledialog
 from PIL import Image, ImageDraw
@@ -23,7 +25,6 @@ class DrawingApp:
         # Инициализация атрибутов кисти
         self.last_x, self.last_y = None, None
         self.brush_color = "black"
-        self.brush_size = 5
         self.previous_color = self.brush_color  # Сохраняем предыдущий цвет кисти
 
         self.setup_ui()
@@ -46,6 +47,10 @@ class DrawingApp:
         color_button = tk.Button(control_frame, text="Выбрать цвет", command=self.choose_color)
         color_button.pack(side=tk.LEFT)
 
+        # Кнопка "Изменить фон"
+        bg_button = tk.Button(control_frame, text="Изменить фон", command=self.change_background)
+        bg_button.pack(side=tk.LEFT)
+
         # Лейбл для предварительного просмотра цвета кисти
         self.color_preview = tk.Label(control_frame, text="     ", bg=self.brush_color)
         self.color_preview.pack(side=tk.LEFT, padx=5)
@@ -57,6 +62,10 @@ class DrawingApp:
         # Кнопка "Ластик"
         eraser_button = tk.Button(control_frame, text="Ластик", command=self.use_eraser)
         eraser_button.pack(side=tk.LEFT)
+
+        # Кнопка "Текст"
+        text_button = tk.Button(control_frame, text="Текст", command=self.add_text)
+        text_button.pack(side=tk.LEFT)
 
         # Кнопка "Очистить"
         clear_button = tk.Button(control_frame, text="Очистить", command=self.clear_canvas)
@@ -70,6 +79,7 @@ class DrawingApp:
         resize_button = tk.Button(control_frame, text="Изменить размер холста", command=self.resize_canvas)
         resize_button.pack(side=tk.LEFT)
 
+        # Изменить размер кисти
         self.brush_size_scale = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL)
         self.brush_size_scale.pack(side=tk.LEFT)
 
@@ -97,8 +107,8 @@ class DrawingApp:
         self.brush_color = self.previous_color
         self.color_preview.config(bg=self.brush_color)  # Обновляем цвет предварительного просмотра
 
-    def change_brush_size(self, size):
-        self.brush_size = size
+    # def change_brush_size(self, size):
+    #     self.brush_size = size
 
     def reset(self, event):
         self.last_x, self.last_y = None, None
@@ -130,6 +140,24 @@ class DrawingApp:
             self.image = Image.new("RGB", (self.canvas_width, self.canvas_height), "white")
             self.draw = ImageDraw.Draw(self.image)
             self.clear_canvas()
+
+    def add_text(self):
+        text = simpledialog.askstring("Ввод текста", "Введите текст\t\t\t:")
+        if text:
+            self.canvas.bind("<Button-1>", lambda event: self.draw_text(event, text))
+
+    def draw_text(self, event, text):
+        x, y = event.x, event.y
+        self.canvas.create_text(x, y, text=text, fill=self.brush_color, font=f"Arial {self.brush_size_scale.get()}")
+        self.draw.text((x, y), text, fill=self.brush_color)
+        self.canvas.unbind("<Button-1>")
+
+    def change_background(self):
+        color = colorchooser.askcolor(color=self.canvas["bg"])[1]
+        if color:
+            self.canvas.config(bg=color)
+            self.image = Image.new("RGB", (self.canvas_width, self.canvas_height), color)
+            self.draw = ImageDraw.Draw(self.image)
 
     def use_eraser(self):
         self.brush_color = "white"
